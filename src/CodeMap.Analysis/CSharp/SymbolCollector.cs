@@ -36,7 +36,7 @@ internal sealed class SymbolCollector : CSharpSyntaxWalker
             span.StartLinePosition.Line + 1,
             span.EndLinePosition.Line + 1);
         var containingId = symbol.ContainingType?.GetDocumentationCommentId();
-        _symbols.Add(new CodeSymbol(id, symbol.Name, kind, containingId, location));
+        _symbols.Add(new CodeSymbol(id, GetDisplayName(symbol), kind, containingId, location));
     }
     public override void VisitClassDeclaration(ClassDeclarationSyntax node)
     {
@@ -47,5 +47,48 @@ internal sealed class SymbolCollector : CSharpSyntaxWalker
     {
         AddSymbol(node, CodeSymbolKind.Method);
         base.VisitMethodDeclaration(node);
+    }
+    public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
+    {
+        AddSymbol(node, CodeSymbolKind.Interface);
+        base.VisitInterfaceDeclaration(node);
+    }
+    public override void VisitStructDeclaration(StructDeclarationSyntax node)
+    {
+        AddSymbol(node, CodeSymbolKind.Struct);
+        base.VisitStructDeclaration(node);
+    }
+    public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
+    {
+        AddSymbol(node, CodeSymbolKind.Record);
+        base.VisitRecordDeclaration(node);
+    }
+    public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
+    {
+        AddSymbol(node, CodeSymbolKind.Enum);
+        base.VisitEnumDeclaration(node);
+    }
+    public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
+    {
+        AddSymbol(node, CodeSymbolKind.Property);
+        base.VisitPropertyDeclaration(node);
+    }
+    public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+    {
+        AddSymbol(node, CodeSymbolKind.Constructor);
+        base.VisitConstructorDeclaration(node);
+    }
+    public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
+    {
+        foreach (var variable in node.Declaration.Variables)
+        {
+            AddSymbol(variable, CodeSymbolKind.Field);
+        }
+        base.VisitFieldDeclaration(node);
+    }
+
+    private static string GetDisplayName(ISymbol symbol)
+    {
+        return symbol is IMethodSymbol { MethodKind: MethodKind.Constructor } ? symbol.ContainingType.Name : symbol.Name;
     }
 }
