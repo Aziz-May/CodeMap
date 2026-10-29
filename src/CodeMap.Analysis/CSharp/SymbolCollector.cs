@@ -24,7 +24,7 @@ internal sealed class SymbolCollector : CSharpSyntaxWalker
 
     public IReadOnlyList<CodeSymbol> Symbols => _symbols;
 
-   
+
     public override void VisitClassDeclaration(ClassDeclarationSyntax node)
     {
         AddSymbol(node, CodeSymbolKind.Class);
@@ -67,7 +67,7 @@ internal sealed class SymbolCollector : CSharpSyntaxWalker
     }
     public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
     {
-        foreach(var variable in node.Declaration.Variables)
+        foreach (var variable in node.Declaration.Variables)
         {
             AddSymbol(variable, CodeSymbolKind.Field);
         }
@@ -77,7 +77,7 @@ internal sealed class SymbolCollector : CSharpSyntaxWalker
 
     private static string GetDisplayName(ISymbol symbol)
     {
-        return symbol is IMethodSymbol {MethodKind: MethodKind.Constructor } ? symbol.ContainingType.Name : symbol.Name;
+        return symbol is IMethodSymbol { MethodKind: MethodKind.Constructor } ? symbol.ContainingType.Name : symbol.Name;
     }
 
     private void AddSymbol(SyntaxNode node, CodeSymbolKind kind)
@@ -95,5 +95,5 @@ internal sealed class SymbolCollector : CSharpSyntaxWalker
         _symbols.Add(new CodeSymbol(id, GetDisplayName(symbol), kind, containingId, location));
     }
 
-   
+
 }

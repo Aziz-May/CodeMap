@@ -14,19 +14,23 @@ public sealed class CSharpAnalyzer : ILanguageAnalyzer
         {
             var text = File.ReadAllText(file);
             var tree = CSharpSyntaxTree.ParseText(text, path: file, cancellationToken: cancellationToken);
-            trees.Add(tree)
-;
+            trees.Add(tree);
         }
         var compilation = CSharpCompilation.Create("CodeMapAnalysis", trees, GetPlatformReferences());
         var symbols = new List<CodeSymbol>();
+        var relations = new List<CodeRelation>();
         foreach (var tree in trees)
         {
             var model = compilation.GetSemanticModel(tree);
-            var collector = new SymbolCollector(model, rootPath, cancellationToken);
-            collector.Visit(tree.GetRoot(cancellationToken));
-            symbols.AddRange(collector.Symbols);
+            var symbolCollector = new SymbolCollector(model, rootPath, cancellationToken);
+            symbolCollector.Visit(tree.GetRoot(cancellationToken));
+            symbols.AddRange(symbolCollector.Symbols);
+            var relationCollector = new RelationCollector(model, rootPath, cancellationToken);
+            relationCollector.Visit(tree.GetRoot(cancellationToken));
+            relations.AddRange(relationCollector.Relations);
+
         }
-        return new AnalysisResult(symbols, [], []);
+        return new AnalysisResult(symbols, relations, []);
     }
     private static List<PortableExecutableReference> GetPlatformReferences()
     {
