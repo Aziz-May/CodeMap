@@ -87,10 +87,7 @@ internal sealed class SymbolCollector : CSharpSyntaxWalker
         var id = symbol?.GetDocumentationCommentId();
         if (symbol is null || id is null) return;
         var span = node.GetLocation().GetLineSpan();
-        var location = new CodeLocation(
-            Path.GetRelativePath(_rootPath, node.SyntaxTree.FilePath),
-            span.StartLinePosition.Line + 1,
-            span.EndLinePosition.Line + 1);
+        var location = SyntaxLocations.ToCodeLocation(node, _rootPath);
         var containingId = symbol.ContainingType?.GetDocumentationCommentId();
         _symbols.Add(new CodeSymbol(id, GetDisplayName(symbol), kind, containingId, location));
     }

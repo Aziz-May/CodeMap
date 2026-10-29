@@ -37,10 +37,7 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
         }
 
         var span = node.GetLocation().GetLineSpan();
-        var location = new CodeLocation(
-            Path.GetRelativePath(_rootPath, node.SyntaxTree.FilePath),
-            span.StartLinePosition.Line + 1,
-            span.EndLinePosition.Line + 1);
+        var location = SyntaxLocations.ToCodeLocation(node, _rootPath);
 
         var target = _model.GetSymbolInfo(node, _cancellationToken).Symbol;
 
