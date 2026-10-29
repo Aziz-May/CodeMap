@@ -1,4 +1,3 @@
-using CodeMap.Analysis.CSharp;
 using CodeMap.Analysis.Model;
 
 
@@ -31,12 +30,13 @@ public sealed class CallRelationTests : IClassFixture<ShopAnalysisFixture>
     public void Analyze_ShopFixture_RecordsChargeCallExactlyOnce()
     {
         Assert.Single(_result.Relations, r => r.SourceId == "M:Shop.Services.OrderService.PlaceOrder(Shop.Models.Order)" &&
-                                            r.TargetId == "M:Shop.Services.PaymentService.Charge(System.Decimal)");
+                                            r.TargetId == "M:Shop.Services.PaymentService.Charge(System.Decimal)" && 
+                                            r.TargetName == "PaymentService.Charge" );
     }
     [Fact]
     public void Analyze_ShopFixture_SkipsCallsIntoDotNetLibraries()
     {
-        var callsFromPlaceOrder = _result.Relations.Count(r => r.SourceId == "M:Shop.Services.OrderService.PlaceOrder(Shop.Models.Order)");
+        var callsFromPlaceOrder = _result.Relations.Count(r => r.SourceId == "M:Shop.Services.OrderService.PlaceOrder(Shop.Models.Order)" && r.Kind == RelationKind.Calls);
         Assert.Equal(2, callsFromPlaceOrder);
     }
     [Fact]
