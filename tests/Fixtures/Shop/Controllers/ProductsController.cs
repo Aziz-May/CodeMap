@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Shop.Data;
 using Shop.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Shop.Controllers;
 
-public class ProductsController
+public class ProductsController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly ILogger<ProductsController> _logger;
