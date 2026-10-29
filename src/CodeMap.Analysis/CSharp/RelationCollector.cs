@@ -27,12 +27,29 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
         AddCall(node);
         base.VisitInvocationExpression(node);
     }
+
     public override void VisitSimpleBaseType(SimpleBaseTypeSyntax node)
     {
         AddBaseType(node);
         base.VisitSimpleBaseType(node);
     }
+
     private void AddBaseType(SimpleBaseTypeSyntax node)
+    {
+        var target = _model.GetTypeInfo(node.Type, _cancellationToken).Type;
+        var kind = target is { TypeKind: TypeKind.Interface } ? RelationKind.Implements : RelationKind.Inherits;
+
+        AddRelation(node, target, node.Type.ToString(), kind);
+    }
+
+    private void AddCall(InvocationExpressionSyntax node)
+    {
+        var target = _model.GetSymbolInfo(node, _cancellationToken).Symbol;
+
+        AddRelation(node, target, node.Expression.ToString(), RelationKind.Calls);
+    }
+
+    private void AddRelation(SyntaxNode node, ISymbol? target, string unresolvedName, RelationKind kind)
     {
         var sourceId = GetSourceId(node);
         if (sourceId is null)
@@ -40,17 +57,14 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
             return;
         }
 
-       
         var location = SyntaxLocations.ToCodeLocation(node, _rootPath);
-
-        var target = _model.GetTypeInfo(node.Type, _cancellationToken).Type;
 
         // Unbound: Roslyn can't tell what this is (e.g. a NuGet package we don't have)
         if (target is null or IErrorTypeSymbol)
         {
             _relations.Add(new CodeRelation(
-                sourceId, null, node.Type.ToString(),
-                RelationKind.Inherits, Confidence.Unresolved, location));
+                sourceId, null, unresolvedName,
+                kind, Confidence.Unresolved, location));
             return;
         }
 
@@ -65,49 +79,10 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
         {
             return;
         }
-        var kind = target.TypeKind == TypeKind.Interface ? RelationKind.Implements : RelationKind.Inherits;
+
         _relations.Add(new CodeRelation(
-            sourceId, targetId,target.Name,
+            sourceId, targetId, GetDisplayName(target),
             kind, Confidence.Certain, location));
-    }
-
-    private void AddCall(InvocationExpressionSyntax node)
-    {
-        var sourceId = GetSourceId(node);
-        if (sourceId is null)
-        {
-            return;
-        }
-
-       
-        var location = SyntaxLocations.ToCodeLocation(node, _rootPath);
-
-        var target = _model.GetSymbolInfo(node, _cancellationToken).Symbol;
-
-        // Unbound: Roslyn can't tell what this is (e.g. a NuGet package we don't have)
-        if (target is null)
-        {
-            _relations.Add(new CodeRelation(
-                sourceId, null, node.Expression.ToString(),
-                RelationKind.Calls, Confidence.Unresolved, location));
-            return;
-        }
-
-        // External: declared in a .NET library, not in the analyzed source
-        if (!target.Locations.Any(l => l.IsInSource))
-        {
-            return;
-        }
-
-        var targetId = target.GetDocumentationCommentId();
-        if (targetId is null)
-        {
-            return;
-        }
-
-        _relations.Add(new CodeRelation(
-            sourceId, targetId, $"{target.ContainingType.Name}.{target.Name}",
-            RelationKind.Calls, Confidence.Certain, location));
     }
 
     private string? GetSourceId(SyntaxNode node)
@@ -120,4 +95,7 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
 
         return _model.GetDeclaredSymbol(member, _cancellationToken)?.GetDocumentationCommentId();
     }
+
+    private static string GetDisplayName(ISymbol symbol) =>
+        symbol.ContainingType is null ? symbol.Name : $"{symbol.ContainingType.Name}.{symbol.Name}";
 }
