@@ -27,6 +27,49 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
         AddCall(node);
         base.VisitInvocationExpression(node);
     }
+    public override void VisitSimpleBaseType(SimpleBaseTypeSyntax node)
+    {
+        AddBaseType(node);
+        base.VisitSimpleBaseType(node);
+    }
+    private void AddBaseType(SimpleBaseTypeSyntax node)
+    {
+        var sourceId = GetSourceId(node);
+        if (sourceId is null)
+        {
+            return;
+        }
+
+       
+        var location = SyntaxLocations.ToCodeLocation(node, _rootPath);
+
+        var target = _model.GetTypeInfo(node.Type, _cancellationToken).Type;
+
+        // Unbound: Roslyn can't tell what this is (e.g. a NuGet package we don't have)
+        if (target is null or IErrorTypeSymbol)
+        {
+            _relations.Add(new CodeRelation(
+                sourceId, null, node.Type.ToString(),
+                RelationKind.Inherits, Confidence.Unresolved, location));
+            return;
+        }
+
+        // External: declared in a .NET library, not in the analyzed source
+        if (!target.Locations.Any(l => l.IsInSource))
+        {
+            return;
+        }
+
+        var targetId = target.GetDocumentationCommentId();
+        if (targetId is null)
+        {
+            return;
+        }
+        var kind = target.TypeKind == TypeKind.Interface ? RelationKind.Implements : RelationKind.Inherits;
+        _relations.Add(new CodeRelation(
+            sourceId, targetId,target.Name,
+            kind, Confidence.Certain, location));
+    }
 
     private void AddCall(InvocationExpressionSyntax node)
     {
@@ -36,7 +79,7 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
             return;
         }
 
-        var span = node.GetLocation().GetLineSpan();
+       
         var location = SyntaxLocations.ToCodeLocation(node, _rootPath);
 
         var target = _model.GetSymbolInfo(node, _cancellationToken).Symbol;

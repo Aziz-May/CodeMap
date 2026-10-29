@@ -32,7 +32,7 @@ public sealed class InheritanceRelationsTests : IClassFixture<ShopAnalysisFixtur
     public void Analyze_ShopFixture_MarksMissingBaseClassAsUnresolved()
     {
         Assert.Contains(_result.Relations, r =>
-            r.SourceId == "T:Shop.Controllers.ProdcutsController" &&
+            r.SourceId == "T:Shop.Controllers.ProductsController" &&
             r.TargetId == null &&
             r.TargetName == "ControllerBase" &&
             r.Kind == RelationKind.Inherits &&
