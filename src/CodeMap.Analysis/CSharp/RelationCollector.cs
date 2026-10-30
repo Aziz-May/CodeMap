@@ -28,6 +28,11 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
         base.VisitInvocationExpression(node);
     }
 
+    public override void VisitParameter(ParameterSyntax node)
+    {
+        AddInjection(node);
+        base.VisitParameter(node);
+    }
     public override void VisitSimpleBaseType(SimpleBaseTypeSyntax node)
     {
         AddBaseType(node);
@@ -42,6 +47,20 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
     {
         AddInstantiation(node);
         base.VisitImplicitObjectCreationExpression(node);
+    }
+
+    private void AddInjection(ParameterSyntax node)
+    {
+        if(node.Parent?.Parent is not ConstructorDeclarationSyntax)
+        {
+            return;
+        }
+        if (node.Type is null)
+        {
+            return;
+        }
+        var target = _model.GetTypeInfo(node.Type , _cancellationToken).Type;
+        AddRelation(node, target, node.Type.ToString(), RelationKind.Injects);
     }
     private void AddInstantiation(BaseObjectCreationExpressionSyntax node)
     {
