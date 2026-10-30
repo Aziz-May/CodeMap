@@ -26,7 +26,6 @@ public sealed class InjectionRelationTests : IClassFixture<ShopAnalysisFixture>
     public void Analyze_ShopFixture_DoesNotTreatMethodParametersAsInjection()
     {
         Assert.DoesNotContain(_result.Relations, r => r.SourceId == "M:Shop.Services.OrderService.PlaceOrder(Shop.Models.Order)" &&
-                                                r.TargetId == "T:Shop.Models.Order" &&
                                                 r.Kind == RelationKind.Injects);
     }
 
