@@ -2,11 +2,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CodeMap.Analysis\CodeMap.Analysis.csproj" />
+    <PackageReference Include="System.CommandLine" />
   </ItemGroup>
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    
   </PropertyGroup>
 
 </Project>
