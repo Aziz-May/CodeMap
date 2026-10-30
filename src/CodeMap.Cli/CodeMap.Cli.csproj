@@ -4,6 +4,10 @@
     <ProjectReference Include="..\CodeMap.Analysis\CodeMap.Analysis.csproj" />
     <PackageReference Include="System.CommandLine" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="CodeMap.Cli.Tests" />
+  </ItemGroup>
+
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
