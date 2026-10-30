@@ -30,8 +30,15 @@ public sealed class InstantiationRelationTests : IClassFixture<ShopAnalysisFixtu
                                               r.Kind == RelationKind.Instantiates);
 
     }
-    
 
-    
-
+    [Fact]
+    public void Analyze_ShopFixture_MarksMissingInstantiatedTypeAsUnresolved()
+    {
+        Assert.Contains(_result.Relations, r =>
+            r.SourceId == "M:Shop.Controllers.ProductsController.GetAll" &&
+            r.TargetId == null &&
+            r.TargetName == "OkObjectResult" &&
+            r.Kind == RelationKind.Instantiates &&
+            r.Confidence == Confidence.Unresolved);
+    }
 }

@@ -33,7 +33,24 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
         AddBaseType(node);
         base.VisitSimpleBaseType(node);
     }
-
+    public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+    {
+        AddInstantiation(node);
+        base.VisitObjectCreationExpression(node);
+    }
+    public override void VisitImplicitObjectCreationExpression(ImplicitObjectCreationExpressionSyntax node)
+    {
+        AddInstantiation(node);
+        base.VisitImplicitObjectCreationExpression(node);
+    }
+    private void AddInstantiation(BaseObjectCreationExpressionSyntax node)
+    {
+        var target = _model.GetTypeInfo(node, _cancellationToken).Type;
+        var unresolvedName = node is ObjectCreationExpressionSyntax creation
+            ? creation.Type.ToString()
+            : "new()";
+        AddRelation(node, target, unresolvedName, RelationKind.Instantiates);
+    }
     private void AddBaseType(SimpleBaseTypeSyntax node)
     {
         var target = _model.GetTypeInfo(node.Type, _cancellationToken).Type;

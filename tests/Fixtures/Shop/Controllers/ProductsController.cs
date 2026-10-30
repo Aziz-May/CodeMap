@@ -19,6 +19,8 @@ public class ProductsController : ControllerBase
 
     public List<Product> GetAll()
     {
+        var result = new OkObjectResult(_db.Products);
+
         _logger.LogInformation("Listing all products");
         return _db.Products;
     }
