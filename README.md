@@ -39,7 +39,7 @@ Errors and messages go to **stderr**, and **stdout** only ever contains the JSON
 
 ## What the output looks like
 
-Running the CLI on the sample `Shop` fixture (on Windows) finds **41 symbols** and **19 relations**. Here is a shortened excerpt:
+Running the CLI on the sample `Shop` fixture finds **41 symbols** and **19 relations**. Here is a shortened excerpt:
 
 ```json
 {
@@ -49,7 +49,7 @@ Running the CLI on the sample `Shop` fixture (on Windows) finds **41 symbols** a
       "name": "OrderService",
       "kind": "Class",
       "containingId": null,
-      "location": { "filePath": "Services\\OrderService.cs", "startLine": 6, "endLine": 27 }
+      "location": { "filePath": "Services/OrderService.cs", "startLine": 6, "endLine": 27 }
     }
   ],
   "relations": [
@@ -59,7 +59,7 @@ Running the CLI on the sample `Shop` fixture (on Windows) finds **41 symbols** a
       "targetName": "PaymentService",
       "kind": "Injects",
       "confidence": "Certain",
-      "location": { "filePath": "Services\\OrderService.cs", "startLine": 11, "endLine": 11 }
+      "location": { "filePath": "Services/OrderService.cs", "startLine": 11, "endLine": 11 }
     },
     {
       "sourceId": "M:Shop.Controllers.ProductsController.GetAll",
@@ -67,14 +67,14 @@ Running the CLI on the sample `Shop` fixture (on Windows) finds **41 symbols** a
       "targetName": "_logger.LogInformation",
       "kind": "Calls",
       "confidence": "Unresolved",
-      "location": { "filePath": "Controllers\\ProductsController.cs", "startLine": 24, "endLine": 24 }
+      "location": { "filePath": "Controllers/ProductsController.cs", "startLine": 24, "endLine": 24 }
     }
   ],
   "warnings": []
 }
 ```
 
-`filePath` is relative to the analyzed folder. It currently uses the OS path separator (`\` on Windows, escaped as `\\` in JSON). Switching to `/` everywhere is on the [roadmap](docs/ROADMAP.md#step-8-hardening).
+`filePath` is relative to the analyzed folder and always uses `/`, on every OS.
 
 ### Symbols
 
