@@ -1,6 +1,7 @@
 
 using CodeMap.Analysis;
 using CodeMap.Analysis.Serialization;
+using CodeMap.Analysis.Discovery;
 
 namespace CodeMap.Cli;
 
@@ -21,7 +22,7 @@ internal sealed class AnalyzeCommand
             error.WriteLine($"Error: The specified path '{fullPath}' does not exist.");
             return ExitCodes.PathNotFound;
         }
-        var files = Directory.GetFiles(fullPath, "*.cs", SearchOption.AllDirectories);
+        var files = SourceFileDiscovery.FindFiles(fullPath, ".cs");
         var result = _analyzer.Analyze(fullPath, files);
         output.Write(AnalysisJson.Serialize(result));
         return ExitCodes.Success;
