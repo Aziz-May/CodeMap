@@ -11,7 +11,7 @@ internal static class SyntaxLocations
     {
         var span = node.GetLocation().GetLineSpan();
         return new CodeLocation(
-            Path.GetRelativePath(rootPath, node.SyntaxTree.FilePath),
+            Path.GetRelativePath(rootPath, node.SyntaxTree.FilePath).Replace(Path.DirectorySeparatorChar, '/'),
             span.StartLinePosition.Line + 1,
             span.EndLinePosition.Line + 1);
     }
