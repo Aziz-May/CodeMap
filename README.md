@@ -4,7 +4,7 @@ CodeMap reads a codebase and builds a **dependency map** from it: which types an
 
 It reads the code **semantically**, not as text. For C#, that means [Roslyn](https://github.com/dotnet/roslyn), the real C# compiler. So when a method calls `_paymentService.Charge(...)`, CodeMap knows *which* `Charge` it is, even if three classes have a method with that name.
 
-> **Status:** Milestone 1 (the analysis engine + CLI) is nearly done. The backend and web UI come next. See [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Status:** Milestone 1 (the analysis engine + CLI) is nearly done. The next goal is a graph accurate enough for trustworthy **change impact analysis**, built and proven in the CLI before any backend or web UI. See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ---
 
@@ -74,7 +74,7 @@ Running the CLI on the sample `Shop` fixture (on Windows) finds **41 symbols** a
 }
 ```
 
-`filePath` is relative to the analyzed folder. It currently uses the OS path separator (`\` on Windows, escaped as `\\` in JSON). Switching to `/` everywhere is on the [roadmap](docs/ROADMAP.md#known-gaps).
+`filePath` is relative to the analyzed folder. It currently uses the OS path separator (`\` on Windows, escaped as `\\` in JSON). Switching to `/` everywhere is on the [roadmap](docs/ROADMAP.md#step-8-hardening).
 
 ### Symbols
 
@@ -198,4 +198,4 @@ dotnet test       # all tests must pass before merging
 
 ## Known limitations
 
-The engine covers the common cases; some C# features are not handled yet (partial classes, generic and extension method IDs, top-level statements, local functions, type usage as a dependency…). The full list and the plan for fixing them are in [docs/ROADMAP.md](docs/ROADMAP.md#known-gaps).
+The engine covers the common cases; some C# features are not handled yet (partial classes, generic and extension method IDs, top-level statements, local functions, type usage as a dependency…). The full list and the plan for fixing them are in [docs/ROADMAP.md](docs/ROADMAP.md).
