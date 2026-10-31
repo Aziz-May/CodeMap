@@ -1,5 +1,6 @@
 using CodeMap.Analysis.CSharp;
 using CodeMap.Analysis.Model;
+using CodeMap.Analysis.Discovery;
 
 namespace CodeMap.Analysis.Tests.CSharp;
 
@@ -10,7 +11,7 @@ public sealed class ShopAnalysisFixture
     public ShopAnalysisFixture()
     {
         var rootPath = Path.Combine(AppContext.BaseDirectory, "Fixtures", "Shop");
-        var files = Directory.GetFiles(rootPath, "*.cs", SearchOption.AllDirectories);
+        var files = SourceFileDiscovery.FindFiles(rootPath, ".cs");
         var analyzer = new CSharpAnalyzer();
         Result = analyzer.Analyze(rootPath, files);
 
