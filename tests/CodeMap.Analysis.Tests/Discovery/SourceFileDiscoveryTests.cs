@@ -16,6 +16,8 @@ public sealed class SourceFileDiscoveryTests : IDisposable
         CreateFile(Path.Combine("node_modules", "pkg", "y.cs"));
         CreateFile(Path.Combine("Views", "Form1.Designer.cs"));
         CreateFile("notes.md");
+        CreateFile(Path.Combine("Models", "Order.g.cs"));
+
     }
     public void Dispose()
     {
@@ -47,5 +49,25 @@ public sealed class SourceFileDiscoveryTests : IDisposable
         var segment = Path.DirectorySeparatorChar + folder + Path.DirectorySeparatorChar;
         var files = SourceFileDiscovery.FindFiles(_root, ".cs");    
         Assert.DoesNotContain(files, f => f.Contains(segment, StringComparison.OrdinalIgnoreCase));
+    }
+    [Theory]
+    [InlineData("Form1.Designer.cs")]
+    [InlineData("Order.g.cs")]
+    public void FindFiles_SkipsGeneratedFiles(string fileName)
+    {
+        var files = SourceFileDiscovery.FindFiles(_root, ".cs");
+        Assert.DoesNotContain(files, f => Path.GetFileName(f).Equals(fileName, StringComparison.OrdinalIgnoreCase));
+    }
+    [Fact]
+    public void FindFiles_ReturnsOnlyRequestedExtension()
+    {
+        var files = SourceFileDiscovery.FindFiles(_root, ".cs");
+        Assert.All(files, f=> Assert.EndsWith(".cs", f, StringComparison.OrdinalIgnoreCase));
+    }
+    [Fact]
+    public void FindFiles_ReturnsFilesInSortedOrder()
+    {
+        var files = SourceFileDiscovery.FindFiles(_root, ".cs");
+        Assert.Equal(files.Order(StringComparer.Ordinal), files);
     }
 }
