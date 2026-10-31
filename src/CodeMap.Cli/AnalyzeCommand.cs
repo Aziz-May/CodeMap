@@ -1,5 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
+
 using CodeMap.Analysis;
+using CodeMap.Analysis.Serialization;
 
 namespace CodeMap.Cli;
 
@@ -10,8 +11,7 @@ internal sealed class AnalyzeCommand
     {
         _analyzer = analyzer;
     }
-    [SuppressMessage("Performance", "CA1822:Mark members as static",
-    Justification = "Becomes instance-based  when the analyzer is injected.")]
+   
     public int Run(string path, TextWriter output, TextWriter error)
     {
         var fullPath = Path.GetFullPath(path);
@@ -21,6 +21,9 @@ internal sealed class AnalyzeCommand
             error.WriteLine($"Error: The specified path '{fullPath}' does not exist.");
             return ExitCodes.PathNotFound;
         }
+        var files = Directory.GetFiles(fullPath, "*.cs", SearchOption.AllDirectories);
+        var result = _analyzer.Analyze(fullPath, files);
+        output.Write(AnalysisJson.Serialize(result));
         return ExitCodes.Success;
     }
 }
