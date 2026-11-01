@@ -37,7 +37,9 @@ public sealed class AnalyzeCommandTests : IDisposable
                 [new CodeRelation("M:A.Run", "M:B.Go", "B.Go", RelationKind.Calls, Confidence.Certain,
                     new CodeLocation("A.cs", 3, 3))],
                 []
-            );
+            ){
+                Analyzer = new AnalyzerInfo("FakeAnalyzer", "1.0.0", "fake"),
+            };
         }
     }
     [Fact]
@@ -154,6 +156,20 @@ public sealed class AnalyzeCommandTests : IDisposable
         command.Run(_tempDir, output, error);
         //Assert
         Assert.Empty(error.ToString());
+    }
+    [Fact]
+    public void Run_ValidPath_WritesSchemaVersion()
+    {
+        //Arrange
+        var fake = new FakeAnalyzer();
+        var command = new AnalyzeCommand(fake);
+        using var output = new StringWriter();
+        using var error = new StringWriter();
+        //Act
+        command.Run(_tempDir, output, error);
+        //Assert
+        var jsonOutput = output.ToString();
+        Assert.Contains($"\"schemaVersion\": {AnalysisResult.CurrentSchemaVersion}", jsonOutput);
     }
     
 }

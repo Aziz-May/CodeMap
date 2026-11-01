@@ -30,7 +30,10 @@ public sealed class CSharpAnalyzer : ILanguageAnalyzer
             relations.AddRange(relationCollector.Relations);
 
         }
-        return new AnalysisResult(symbols, relations, []);
+        return new AnalysisResult(symbols, relations, [])
+        {
+            Analyzer = Info,
+        };
     }
     private static List<PortableExecutableReference> GetPlatformReferences()
     {
@@ -40,4 +43,9 @@ public sealed class CSharpAnalyzer : ILanguageAnalyzer
         .Select(path => MetadataReference.CreateFromFile(path))
         .ToList();
     }
+    private static readonly AnalyzerInfo Info = new(
+        "CodeMap.CSharp",
+        typeof(CSharpAnalyzer).Assembly.GetName().Version?.ToString(3) ?? "0.0.0",
+        "csharp"
+    );
 }

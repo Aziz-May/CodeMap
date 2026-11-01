@@ -70,11 +70,20 @@ Running the CLI on the sample `Shop` fixture finds **41 symbols** and **19 relat
       "location": { "filePath": "Controllers/ProductsController.cs", "startLine": 24, "endLine": 24 }
     }
   ],
-  "warnings": []
+  "warnings": [],
+  "schemaVersion": 1,
+  "analyzer": { "name": "CodeMap.CSharp", "version": "0.1.0", "language": "csharp" }
 }
 ```
 
 `filePath` is relative to the analyzed folder and always uses `/`, on every OS.
+
+### Versioning
+
+Every result says which format it uses and what produced it:
+
+- **`schemaVersion`** is the version of the JSON format. It is increased **only for breaking changes**: a field renamed or removed, or a field whose meaning changes (for example, line numbers becoming 0-based). Adding a new field doesn't change it, because readers ignore fields they don't know. New enum values, such as a new relation kind, don't change it either, so readers should handle values they don't recognize instead of failing.
+- **`analyzer`** names the analyzer that produced the result, its version and its language. This tells you which version a stored map came from, and which language rules apply to it.
 
 ### Symbols
 

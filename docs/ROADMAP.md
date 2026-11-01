@@ -74,13 +74,13 @@ These steps fix the output contract and the IDs before anything is built on top 
 
 | Step | What | Why now |
 |---|---|---|
-| 8.0 | Test helper that analyzes inline code snippets | Every step below needs isolated, readable tests |
+| 8.0 | Test helper that analyzes inline code snippets ✅ | Every step below needs isolated, readable tests |
 | 8a | `filePath` always uses `/` ✅ | Before this, the same repo gave different JSON on Windows and Linux |
-| 8b | `schemaVersion` and analyzer name/version in `AnalysisResult` | Backward compatibility can't be checked without them, and adding them later is costly |
+| 8b | `schemaVersion` and analyzer name/version in `AnalysisResult` ✅ | Backward compatibility can't be checked without them, and adding them later is costly |
 | 8c | #5 Partial classes produce duplicate symbol IDs | Duplicate IDs break any storage that uses them as keys |
-| 8d | Generic and extension method IDs don't match their declaration (`OriginalDefinition`, `ReducedFrom`) | These relations point at nothing |
-| 8e | Relations inside field initializers are dropped | Silent data loss |
-| 8f | An interface extending an interface is recorded as `Implements` | The relation has the wrong kind |
+| 8d | #13, #14 Generic and extension method IDs don't match their declaration (`OriginalDefinition`, `ReducedFrom`) | These relations point at nothing |
+| 8e | #15 Relations inside field initializers are dropped | Silent data loss |
+| 8f | #16 An interface extending an interface is recorded as `Implements` | The relation has the wrong kind |
 
 **Done when:** steps 8.0–8f are merged and the CLI runs on a real open-source C# project with no duplicate IDs and no crashes.
 
@@ -104,18 +104,18 @@ This takes about a day and comes **before** milestone 2. Run Slnmap, SharpLensMc
 **Goal:** the dependency graph is complete enough that "nothing is affected" can be believed.
 
 - **The relation kinds impact analysis needs:**
-  - `Uses`: type usage in fields, parameters, return types and generic arguments
-  - `Reads` / `Writes`: property and field access
+  - `Uses`: type usage in fields, parameters, return types and generic arguments (#18)
+  - `Reads` / `Writes`: property and field access (#19)
   - `Overrides`
-  - Member-level implementations: which method implements which interface method
+  - Member-level implementations: which method implements which interface method, so calls through an interface reach the implementation (#20)
 - **A containment hierarchy:** project → namespace → type → member. Architecture views and rules depend on it.
 - **Package references without a build:** read `PackageReference`s from `.csproj` files as plain XML, with no MSBuild evaluation, and load the packages' reference assemblies as metadata only.
 - **Multi-project solutions:** one compilation per project, with the references between them.
 - **Missing symbols:** #6 top-level statements, #7 local functions, #8 events/indexers/operators/delegates/destructors, #9 positional record properties.
 - **Smaller gaps:**
-  - method groups and delegates
+  - method groups and delegates (#21)
   - primary constructors and property injection treated as `Injects`
-  - unresolved base types always being recorded as `Inherits`
+  - unresolved base types always being recorded as `Inherits` (#17)
 - **Accuracy measurement:** on 2–3 real repositories, compare CodeMap's "who depends on X?" with Roslyn's `SymbolFinder.FindReferencesAsync` run on a built copy. Report precision and recall, and track them over time.
 
 **Done when:** precision and recall are measured on real repositories and the share of `Unresolved` relations is low enough to rely on.
