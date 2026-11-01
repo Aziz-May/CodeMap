@@ -30,7 +30,10 @@ public sealed class CSharpAnalyzer : ILanguageAnalyzer
             relations.AddRange(relationCollector.Relations);
 
         }
-        return new AnalysisResult(symbols, relations, []);
+        return new AnalysisResult(symbols, relations, [])
+        {
+            Analyzer = new AnalyzerInfo("todo", "0.0.0", "todo"),
+        };
     }
     private static List<PortableExecutableReference> GetPlatformReferences()
     {

@@ -37,7 +37,9 @@ public sealed class AnalyzeCommandTests : IDisposable
                 [new CodeRelation("M:A.Run", "M:B.Go", "B.Go", RelationKind.Calls, Confidence.Certain,
                     new CodeLocation("A.cs", 3, 3))],
                 []
-            );
+            ){
+                Analyzer = new AnalyzerInfo("FakeAnalyzer", "1.0.0", "fake"),
+            };
         }
     }
     [Fact]
