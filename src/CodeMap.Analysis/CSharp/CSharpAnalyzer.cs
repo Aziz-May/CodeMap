@@ -32,7 +32,7 @@ public sealed class CSharpAnalyzer : ILanguageAnalyzer
         }
         return new AnalysisResult(symbols, relations, [])
         {
-            Analyzer = new AnalyzerInfo("todo", "0.0.0", "todo"),
+            Analyzer = Info,
         };
     }
     private static List<PortableExecutableReference> GetPlatformReferences()
@@ -43,4 +43,9 @@ public sealed class CSharpAnalyzer : ILanguageAnalyzer
         .Select(path => MetadataReference.CreateFromFile(path))
         .ToList();
     }
+    private static readonly AnalyzerInfo Info = new(
+        "CodeMap.CSharp",
+        typeof(CSharpAnalyzer).Assembly.GetName().Version?.ToString(3) ?? "0.0.0",
+        "csharp"
+    );
 }

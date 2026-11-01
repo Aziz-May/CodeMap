@@ -157,5 +157,19 @@ public sealed class AnalyzeCommandTests : IDisposable
         //Assert
         Assert.Empty(error.ToString());
     }
+    [Fact]
+    public void Run_ValidPath_WritesSchemaVersion()
+    {
+        //Arrange
+        var fake = new FakeAnalyzer();
+        var command = new AnalyzeCommand(fake);
+        using var output = new StringWriter();
+        using var error = new StringWriter();
+        //Act
+        command.Run(_tempDir, output, error);
+        //Assert
+        var jsonOutput = output.ToString();
+        Assert.Contains($"\"schemaVersion\": {AnalysisResult.CurrentSchemaVersion}", jsonOutput);
+    }
     
 }

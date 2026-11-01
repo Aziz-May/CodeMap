@@ -76,7 +76,7 @@ These steps fix the output contract and the IDs before anything is built on top 
 |---|---|---|
 | 8.0 | Test helper that analyzes inline code snippets ✅ | Every step below needs isolated, readable tests |
 | 8a | `filePath` always uses `/` ✅ | Before this, the same repo gave different JSON on Windows and Linux |
-| 8b | `schemaVersion` and analyzer name/version in `AnalysisResult` | Backward compatibility can't be checked without them, and adding them later is costly |
+| 8b | `schemaVersion` and analyzer name/version in `AnalysisResult` ✅ | Backward compatibility can't be checked without them, and adding them later is costly |
 | 8c | #5 Partial classes produce duplicate symbol IDs | Duplicate IDs break any storage that uses them as keys |
 | 8d | #13, #14 Generic and extension method IDs don't match their declaration (`OriginalDefinition`, `ReducedFrom`) | These relations point at nothing |
 | 8e | #15 Relations inside field initializers are dropped | Silent data loss |
