@@ -86,7 +86,13 @@ internal sealed class SymbolCollector : CSharpSyntaxWalker
         var symbol = _model.GetDeclaredSymbol(node, _cancellationToken);
         var id = symbol?.GetDocumentationCommentId();
         if (symbol is null || id is null) return;
-        var span = node.GetLocation().GetLineSpan();
+        // A partial type has one symbol but several declarations (one per file):
+        // only the first declaration adds it, so its ID appears once
+        var first = symbol.DeclaringSyntaxReferences[0];
+        if (first.SyntaxTree != node.SyntaxTree || first.Span != node.Span)
+        {
+            return;
+        }
         var location = SyntaxLocations.ToCodeLocation(node, _rootPath);
         var containingId = symbol.ContainingType?.GetDocumentationCommentId();
         _symbols.Add(new CodeSymbol(id, GetDisplayName(symbol), kind, containingId, location));
