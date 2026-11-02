@@ -105,6 +105,7 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
         }
 
         // External: declared in a .NET library, not in the analyzed source
+        target = ToDeclaration(target);
         if (!target.Locations.Any(l => l.IsInSource))
         {
             return;
@@ -131,6 +132,19 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
 
         return _model.GetDeclaredSymbol(member, _cancellationToken)?.GetDocumentationCommentId();
     }
+    // A use of a symbol can differ from its declaration: Box<int> instead of Box<T>,
+    // or the reduced form of an extension method. Bring it back to the declaration
+    // so the relation's TargetId matches the declared symbol's ID.
+    private static ISymbol ToDeclaration(ISymbol symbol)
+    {
+        if (symbol is IMethodSymbol { ReducedFrom: { } unreduced })
+        {
+            symbol = unreduced;
+        }
+
+        return symbol.OriginalDefinition;
+    }
+
 
     private static string GetDisplayName(ISymbol symbol) =>
         symbol.ContainingType is null ? symbol.Name : $"{symbol.ContainingType.Name}.{symbol.Name}";
