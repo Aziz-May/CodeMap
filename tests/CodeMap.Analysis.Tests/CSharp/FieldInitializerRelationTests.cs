@@ -59,4 +59,28 @@ public sealed class FieldInitializerRelationTests
             r.SourceId == "P:Controller.Service" &&
             r.TargetId == "T:Service");
     }
+    [Fact]
+public void Analyze_LocalInsideFieldInitializerLambda_RecordsFromField()
+{
+    var result = SnippetAnalysis.Run(("Controller.cs", """
+        using System;
+
+        public class Service { }
+
+        public class Controller
+        {
+            private readonly Func<Service> _factory = () =>
+            {
+                var s = new Service();
+                return s;
+            };
+        }
+        """));
+
+    Assert.Contains(result.Relations, r =>
+        r.Kind == RelationKind.Instantiates &&
+        r.SourceId == "F:Controller._factory" &&
+        r.TargetId == "T:Service");
+}
+
 }
