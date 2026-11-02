@@ -112,7 +112,7 @@ A `partial` type split across several files appears **once**, with the location 
 | `Inherits` | a type extends a base class | `class Product : Entity` |
 | `Implements` | a type implements an interface | `class PaymentService : IPaymentGateway` |
 
-The **source** of a relation is always the innermost member where the code appears (for example the method that makes the call). A type-level view ("`OrderService` depends on `PaymentService`") can be built by rolling relations up through `containingId`.
+The **source** of a relation is always the innermost member where the code appears: for example the method that makes the call, or the field whose initializer creates an object (`private Service _a = new Service(), _b = new Service();` gives one relation from `_a` and one from `_b`). A type-level view ("`OrderService` depends on `PaymentService`") can be built by rolling relations up through `containingId`.
 
 The **target** always points to the symbol as it is **declared**. A use of `Box<int>` targets the generic type `` Box`1 ``, and an extension method call such as `5.Twice()` targets the declared static method `Twice(this int x)`. So a relation's `targetId` matches the declared symbol's `id`. A few kinds of declaration aren't extracted as symbols yet (see the roadmap), and relations to those have no matching entry in `symbols`.
 

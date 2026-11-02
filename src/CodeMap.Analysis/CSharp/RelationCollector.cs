@@ -130,7 +130,23 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
             return null;
         }
 
-        return _model.GetDeclaredSymbol(member, _cancellationToken)?.GetDocumentationCommentId();
+        // A field declaration can declare several fields (Service _a = …, _b = …;), so it has
+    // no single symbol. Use the variable of THIS declaration that contains the node.
+    SyntaxNode declaration = member;
+    if (member is BaseFieldDeclarationSyntax)
+    {
+        var variable = node.Ancestors()
+            .OfType<VariableDeclaratorSyntax>()
+            .FirstOrDefault(v => v.Parent?.Parent == member);
+
+        if (variable is not null)
+        {
+            declaration = variable;
+        }
+    }
+
+    return _model.GetDeclaredSymbol(declaration, _cancellationToken)?.GetDocumentationCommentId();
+
     }
     // A use of a symbol can differ from its declaration: Box<int> instead of Box<T>,
     // or the reduced form of an extension method. Bring it back to the declaration
