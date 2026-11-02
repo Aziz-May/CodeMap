@@ -100,6 +100,8 @@ Each symbol has a **stable ID** in Roslyn's [documentation comment ID](https://l
 
 The ID depends only on the code itself, not on line numbers or file names, so the same symbol keeps the same ID when the code around it changes. `containingId` links a member to the type it belongs to.
 
+A `partial` type split across several files appears **once**, with the location of its first declaration in the analyzed file order.
+
 ### Relations
 
 | Kind | Meaning | Example in the code |

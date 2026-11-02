@@ -77,7 +77,7 @@ These steps fix the output contract and the IDs before anything is built on top 
 | 8.0 | Test helper that analyzes inline code snippets ✅ | Every step below needs isolated, readable tests |
 | 8a | `filePath` always uses `/` ✅ | Before this, the same repo gave different JSON on Windows and Linux |
 | 8b | `schemaVersion` and analyzer name/version in `AnalysisResult` ✅ | Backward compatibility can't be checked without them, and adding them later is costly |
-| 8c | #5 Partial classes produce duplicate symbol IDs | Duplicate IDs break any storage that uses them as keys |
+| 8c | #5 Partial classes produce duplicate symbol IDs ✅ | Duplicate IDs break any storage that uses them as keys |
 | 8d | #13, #14 Generic and extension method IDs don't match their declaration (`OriginalDefinition`, `ReducedFrom`) | These relations point at nothing |
 | 8e | #15 Relations inside field initializers are dropped | Silent data loss |
 | 8f | #16 An interface extending an interface is recorded as `Implements` | The relation has the wrong kind |
@@ -112,6 +112,7 @@ This takes about a day and comes **before** milestone 2. Run Slnmap, SharpLensMc
 - **Package references without a build:** read `PackageReference`s from `.csproj` files as plain XML, with no MSBuild evaluation, and load the packages' reference assemblies as metadata only.
 - **Multi-project solutions:** one compilation per project, with the references between them.
 - **Missing symbols:** #6 top-level statements, #7 local functions, #8 events/indexers/operators/delegates/destructors, #9 positional record properties.
+- **All declaration locations for partial types:** today only the first declaration's location is kept. Renaming or navigating a partial type needs every file that declares it, so this means an additional field in `CodeSymbol`, not a renamed one, so that the format stays backward compatible.
 - **Smaller gaps:**
   - method groups and delegates (#21)
   - primary constructors and property injection treated as `Injects`
