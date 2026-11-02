@@ -79,7 +79,7 @@ These steps fix the output contract and the IDs before anything is built on top 
 | 8b | `schemaVersion` and analyzer name/version in `AnalysisResult` ✅ | Backward compatibility can't be checked without them, and adding them later is costly |
 | 8c | #5 Partial classes produce duplicate symbol IDs ✅ | Duplicate IDs break any storage that uses them as keys |
 | 8d | #13, #14 Uses of generic types and extension methods don't target the declared symbol (`OriginalDefinition`, `ReducedFrom`) ✅ | These relations pointed at nothing. Generic *method* calls were already correct. |
-| 8e | #15 Relations inside field initializers are dropped | Silent data loss |
+| 8e | #15 Relations inside field initializers are dropped ✅ | Silent data loss |
 | 8f | #16 An interface extending an interface is recorded as `Implements` | The relation has the wrong kind |
 
 **Done when:** steps 8.0–8f are merged and the CLI runs on a real open-source C# project with no duplicate IDs and no crashes.
