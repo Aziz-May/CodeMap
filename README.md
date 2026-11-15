@@ -109,7 +109,7 @@ A `partial` type split across several files appears **once**, with the location 
 | `Calls` | a member invokes a method | `_paymentService.Charge(order.Total)` |
 | `Instantiates` | a member creates an object | `new OrderService(payment, db)` or `new()` |
 | `Injects` | a constructor receives a dependency | `public OrderService(PaymentService paymentService)` |
-| `Inherits` | a type extends a base class | `class Product : Entity` |
+| `Inherits` | a type extends a base class, or an interface extends another interface | `class Product : Entity`, `interface IRepository : IReadable` |
 | `Implements` | a type implements an interface | `class PaymentService : IPaymentGateway` |
 
 The **source** of a relation is always the innermost member where the code appears: for example the method that makes the call, or the field whose initializer creates an object (`private Service _a = new Service(), _b = new Service();` gives one relation from `_a` and one from `_b`). A type-level view ("`OrderService` depends on `PaymentService`") can be built by rolling relations up through `containingId`.

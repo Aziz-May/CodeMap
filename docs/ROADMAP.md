@@ -43,7 +43,7 @@ So a graph, a visualization, a CLI or an MCP server are **not** reasons for Code
 
 | # | Milestone | Status |
 |---|---|---|
-| 1 | Analysis engine + CLI (C#) | 🟡 in progress (step 8) |
+| 1 | Analysis engine + CLI (C#) | 🟡 in progress (run on a real project) |
 | — | Research checkpoint: evaluate competing tools | ⬜ |
 | 2 | A graph you can trust | ⬜ |
 | 3 | Impact and diff, in the CLI and on pull requests | ⬜ |
@@ -66,7 +66,7 @@ So a graph, a visualization, a CLI or an MCP server are **not** reasons for Code
 | 5 | `Inherits`, `Implements`, `Instantiates`, `Injects` | ✅ |
 | 6 | CLI: `analyze` command, JSON output, exit codes | ✅ |
 | 7 | File discovery: skips build folders and generated files, ignores symlinks, returns sorted output | ✅ |
-| 8 | Hardening the contract and the IDs (see below) | 🟡 next |
+| 8 | Hardening the contract and the IDs (see below) | ✅ |
 
 ### Step 8: hardening
 
@@ -80,7 +80,7 @@ These steps fix the output contract and the IDs before anything is built on top 
 | 8c | #5 Partial classes produce duplicate symbol IDs ✅ | Duplicate IDs break any storage that uses them as keys |
 | 8d | #13, #14 Uses of generic types and extension methods don't target the declared symbol (`OriginalDefinition`, `ReducedFrom`) ✅ | These relations pointed at nothing. Generic *method* calls were already correct. |
 | 8e | #15 Relations inside field initializers are dropped ✅ | Silent data loss |
-| 8f | #16 An interface extending an interface is recorded as `Implements` | The relation has the wrong kind |
+| 8f | #16 An interface extending an interface is recorded as `Implements` ✅ | The relation has the wrong kind |
 
 **Done when:** steps 8.0–8f are merged and the CLI runs on a real open-source C# project with no duplicate IDs and no crashes.
 

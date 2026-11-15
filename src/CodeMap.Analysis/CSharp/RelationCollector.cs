@@ -13,6 +13,8 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
     private readonly CancellationToken _cancellationToken;
     private readonly List<CodeRelation> _relations = [];
 
+
+
     public RelationCollector(SemanticModel model, string rootPath, CancellationToken cancellationToken = default)
     {
         _model = model;
@@ -72,8 +74,13 @@ internal sealed class RelationCollector : CSharpSyntaxWalker
     }
     private void AddBaseType(SimpleBaseTypeSyntax node)
     {
-        var target = _model.GetTypeInfo(node.Type, _cancellationToken).Type;
-        var kind = target is { TypeKind: TypeKind.Interface } ? RelationKind.Implements : RelationKind.Inherits;
+       var target = _model.GetTypeInfo(node.Type, _cancellationToken).Type;
+
+            // An interface can't implement anything: everything it lists after ':' is inherited
+        var declaredInInterface = node.FirstAncestorOrSelf<TypeDeclarationSyntax>() is InterfaceDeclarationSyntax;
+        var kind = !declaredInInterface && target is { TypeKind: TypeKind.Interface }
+            ? RelationKind.Implements
+            : RelationKind.Inherits;
 
         AddRelation(node, target, node.Type.ToString(), kind);
     }
